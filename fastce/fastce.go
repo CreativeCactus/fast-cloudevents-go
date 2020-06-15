@@ -14,6 +14,12 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// DefaultContentType is used for events which do not have an associated DataContentType and one cannot be inferred from encoding (likely because it is binary).
+const DefaultContentType = "text/plain"
+
+// DefaultContentTypeJSON is used for events which do not have an associated DataContentType and one can be inferred (as DefaultContentTypeJSON).
+const DefaultContentTypeJSON = "application/json"
+
 /*
  ██████╗  ██████╗ ██████╗  ██████╗███████╗██╗      █████╗ ██╗███╗   ██╗
  ██╔══██╗██╔═══██╗██╔══██╗██╔════╝██╔════╝██║     ██╔══██╗██║████╗  ██║
@@ -287,7 +293,7 @@ func SetEvents(mapper j.CEToMap, res *fasthttp.Response, ces []j.CloudEvent, mod
 // Note that this does not perform the request, see .Send if using a CECLient
 // Note that ces[1...] are dropped unless mode is batch
 func SendEvents(mapper j.CEToMap, req *fasthttp.Request, ces []j.CloudEvent, mode j.Mode) (err error) {
-	if len(ces) < 1 && mode != j.ModeBatch{
+	if len(ces) < 1 && mode != j.ModeBatch {
 		return fmt.Errorf("Could not put %d events in mode %d", len(ces), mode)
 	}
 
@@ -531,7 +537,7 @@ func (rr ReqRes) CEToBinary(mapper j.CEToMap, ce j.CloudEvent) (err error) {
 	// Optional
 	datacontenttype, ok := cm["datacontenttype"].(string)
 	if !ok {
-		return fmt.Errorf("Mapped non-string: DataContentType")
+		datacontenttype = DefaultContentType
 	}
 	head.Set("Content-Type", datacontenttype)
 
@@ -637,7 +643,11 @@ func (rr ReqRes) BinaryToCE(mapper j.MapToCE) (ce j.CloudEvent, err error) {
 		return ce, fmt.Errorf("Could not read binary headers: %s", err.Error())
 	}
 
-	cm["datacontenttype"] = string(head.Peek("Content-Type"))
+	dct = string(head.Peek("Content-Type"))
+	if len(dct) < 1 {
+		dct = DefaultContentType
+	}
+	cm["datacontenttype"] = dct
 
 	// Additional
 	body, err := rr.Body()
@@ -671,6 +681,11 @@ func (rr ReqRes) StructureJSONToCE(mapper j.MapToCE) (ce j.CloudEvent, err error
 	if err != nil {
 		err = fmt.Errorf("Map error: %s", err.Error())
 	}
+
+	if len(ce.DataContentType) < 1 {
+		ce.DataContentType = DefaultContentTypeJSON
+	}
+
 	return
 }
 
@@ -691,6 +706,12 @@ func (rr ReqRes) BatchJSONToCE(mapper j.MapToCE) (ces j.CloudEvents, err error) 
 	ces, err = cms.ToCEs(mapper)
 	if err != nil {
 		err = fmt.Errorf("Map error: %s", err.Error())
+	}
+
+	for i := range ces {
+		if len(ces[i].DataContentType) < 1 {
+			ces[i].DataContentType = DefaultContentTypeJSON
+		}
 	}
 
 	return

@@ -552,14 +552,13 @@ func GenerateValidEvents(num uint) []CloudEvent {
 	ces := []CloudEvent{}
 	for i := uint(0); i < num; i++ {
 		ces = append(ces, CloudEvent{
-			Id:              fmt.Sprintf("Example_%s", timestamp()),
-			Source:          "Example",
-			SpecVersion:     "v1.0",
-			Type:            "test",
-			DataContentType: "text/plain",
-			DataSchema:      "http://localhost/schema",
-			Subject:         "test",
-			Time:            time.Now(),
+			Id:          fmt.Sprintf("Example_%s", timestamp()),
+			Source:      "Example",
+			SpecVersion: "v1.0",
+			Type:        "test",
+			DataSchema:  "http://localhost/schema",
+			Subject:     "test",
+			Time:        time.Now(),
 			Extensions: map[string]interface{}{
 				"extension-1": "value",
 			},

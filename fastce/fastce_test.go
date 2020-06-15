@@ -84,7 +84,7 @@ func TestBinary(t *testing.T) {
 		if ce.Time.Format(time.RFC3339Nano) != re.Time.Format(time.RFC3339Nano) {
 			t.Fatalf("Time in event %d differs in response:\n\tRequest: %s\n\tResponse: %s", i, ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
 		}
-		t.Logf("CE.Time matchs:\n\tRequest: %s\n\tResponse: %s", ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
+		t.Logf("CE.Time matches:\n\tRequest: %s\n\tResponse: %s", ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
 	}
 }
 func TestStructure(t *testing.T) {
@@ -111,7 +111,7 @@ func TestStructure(t *testing.T) {
 		if ce.Time.Format(time.RFC3339Nano) != re.Time.Format(time.RFC3339Nano) {
 			t.Fatalf("Time in event %d differs in response:\n\tRequest: %s\n\tResponse: %s", i, ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
 		}
-		t.Logf("CE.Time matchs:\n\tRequest: %s\n\tResponse: %s", ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
+		t.Logf("CE.Time matches:\n\tRequest: %s\n\tResponse: %s", ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
 	}
 }
 func TestBatch(t *testing.T) {
@@ -132,13 +132,24 @@ func TestBatch(t *testing.T) {
 		t.Fatalf("TestBatch: %s", err.Error())
 	}
 
-	// Check that nano time is preserved
-	for i, re := range res {
-		ce := ces[i]
-		if ce.Time.Format(time.RFC3339Nano) != re.Time.Format(time.RFC3339Nano) {
-			t.Fatalf("Time in event %d differs in response:\n\tRequest: %s\n\tResponse: %s", i, ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
+	{ // Check that nano time is preserved
+		for i, re := range res {
+			ce := ces[i]
+			if ce.Time.Format(time.RFC3339Nano) != re.Time.Format(time.RFC3339Nano) {
+				t.Fatalf("Time in event %d differs in response:\n\tRequest: %s\n\tResponse: %s", i, ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
+			}
+			t.Logf("CE.Time matches:\n\tRequest: %s\n\tResponse: %s", ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
 		}
-		t.Logf("CE.Time matchs:\n\tRequest: %s\n\tResponse: %s", ce.Time.Format(time.RFC3339Nano), re.Time.Format(time.RFC3339Nano))
+	}
+
+	{ // Check that DataContentType is set
+		for i, re := range res {
+			ce := ces[i]
+			if re.DataContentType != DefaultContentTypeJSON {
+				t.Fatalf("DataContentType in event %d differs from expected: %s\n\tResponse: %s", i, DefaultContentTypeJSON, re.DataContentType)
+			}
+			t.Logf("CE.DataContentType matches:\n\tRequest: %s\n\tDefault: %s\n\tResponse: %s", ce.DataContentType, DefaultContentTypeJSON, re.DataContentType)
+		}
 	}
 
 }

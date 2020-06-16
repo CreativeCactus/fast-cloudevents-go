@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Mode int
@@ -391,13 +393,12 @@ func DefaultCEToMap(ce CloudEvent) (m CEMap, err error) {
 	return
 }
 
-// DefaultMapToCE (formarly FromMap) converts the intermediate map representation back into a CloudEvent
+// DefaultMapToCE (formerly FromMap) converts the intermediate map representation back into a CloudEvent
 // It has specific expectations about the types present in the provided map m.
 // It does not perform validation, see .Valid()
 // DefaultMapToCE makes a best attempt to put the given map into an event, but can be
 // wrapped or replaced with a custom mapper (jsonce.CEToMap or jsonce.MapToCE)
 func DefaultMapToCE(m CEMap) (ce CloudEvent, err error) {
-	fmt.Sprintf("DefaultMapToCE: %#v\n", m)
 	ce = CloudEvent{}
 	// Required https://github.com/cloudevents/spec/blob/master/spec.md#required-attributes
 	ok := false
@@ -552,7 +553,7 @@ func GenerateValidEvents(num uint) []CloudEvent {
 	ces := []CloudEvent{}
 	for i := uint(0); i < num; i++ {
 		ces = append(ces, CloudEvent{
-			Id:          fmt.Sprintf("Example_%s", timestamp()),
+			Id:          uuid.New().String(),
 			Source:      "Example",
 			SpecVersion: "v1.0",
 			Type:        "test",

@@ -132,6 +132,11 @@ func TestBatch(t *testing.T) {
 		t.Fatalf("TestBatch: %s", err.Error())
 	}
 
+	if len(res) != len(ces) {
+		t.Fatalf("Got %d events back but expected %d", len(res), len(ces))
+	}
+	t.Logf("Got %d events back as expected", len(res))
+
 	{ // Check that nano time is preserved
 		for i, re := range res {
 			ce := ces[i]

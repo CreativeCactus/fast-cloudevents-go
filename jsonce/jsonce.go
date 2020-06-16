@@ -553,17 +553,18 @@ func GenerateValidEvents(num uint) []CloudEvent {
 	ces := []CloudEvent{}
 	for i := uint(0); i < num; i++ {
 		ces = append(ces, CloudEvent{
-			Id:          uuid.New().String(),
-			Source:      "Example",
-			SpecVersion: "v1.0",
-			Type:        "test",
-			DataSchema:  "http://localhost/schema",
-			Subject:     "test",
-			Time:        time.Now(),
+			Id:              uuid.New().String(),
+			Source:          "Example",
+			SpecVersion:     "v1.0",
+			Type:            "test",
+			DataSchema:      "http://localhost/schema",
+			Subject:         "test",
+			Time:            time.Now(),
+			Data:            []byte("raw data"),
+			DataContentType: "example/example", // https://www.iana.org/assignments/media-types/media-types.xhtml#examples
 			Extensions: map[string]interface{}{
 				"extension-1": "value",
 			},
-			Data: []byte("raw data"),
 		})
 	}
 	return ces

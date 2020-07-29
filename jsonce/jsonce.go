@@ -555,7 +555,7 @@ func GenerateValidEvents(num uint) []CloudEvent {
 		ces = append(ces, CloudEvent{
 			Id:              uuid.New().String(),
 			Source:          "Example",
-			SpecVersion:     "v1.0",
+			SpecVersion:     "1.0",
 			Type:            "test",
 			DataSchema:      "http://localhost/schema",
 			Subject:         "test",
